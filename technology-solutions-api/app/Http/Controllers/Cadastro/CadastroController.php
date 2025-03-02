@@ -62,7 +62,7 @@ class CadastroController extends Controller
                     'status'  => 400,
                     'success' => false,
                     'msg'     => 'Erro de validação.',
-                    'data'    => $validator->errors(),
+                    'object'  => $validator->errors(),
                 ], 400);
             }
 
@@ -96,7 +96,7 @@ class CadastroController extends Controller
 
             if (!$colaborador) {
                 return response()->json([
-                    'status'  => 500,
+                    'status'  => 400,
                     'success' => false,
                     'msg'     => 'Erro ao cadastrar colaborador.',
                     'data'    => now()->format('Y-m-d H:i:s'),
@@ -107,7 +107,7 @@ class CadastroController extends Controller
                 'status'  => 201,
                 'success' => true,
                 'msg'     => 'Colaborador cadastrado com sucesso.',
-                'data'    => $colaborador,
+                "data"    => now()->format('Y-m-d H:i:s')
             ], 201);
 
         } catch (\Exception $e) {
