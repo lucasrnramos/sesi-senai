@@ -19,3 +19,4 @@ Route::post('/cadastrar', [CadastroController::class, 'store']);
 Route::post('/login', [LoginController::class, 'show']);
 Route::get('/perfis', [PerfisController::class, 'index']);
 Route::post('/perfis/criar', [PerfisController::class, 'store']);
+Route::patch('/perfis/editar/{cpf}/{id_perfil}', [PerfisController::class, 'update']);
