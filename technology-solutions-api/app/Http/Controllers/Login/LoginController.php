@@ -69,7 +69,7 @@ class LoginController extends Controller
                     'status'  => 400,
                     'success' => false,
                     'msg'     => 'Erro ao validar dados: ' . $validator->errors(),
-                    'data'    => now()->format('Y-m-d H:i:s'),
+                    'date'    => now()->format('Y-m-d H:i:s'),
                 ], 400);
             }
 
@@ -101,7 +101,7 @@ class LoginController extends Controller
                 'status'  => 500,
                 'success' => false,
                 'msg'     => 'Erro ao retornar dados: ' . $e->getMessage(),
-                'data'    => now()->format('Y-m-d H:i:s'),
+                'date'    => now()->format('Y-m-d H:i:s'),
             ], 500);
         }
     }

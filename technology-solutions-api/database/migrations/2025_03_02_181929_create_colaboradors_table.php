@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('colaborador', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('id_perfil');
             $table->string('nome', 100);
             $table->string('email', 50)->unique();
             $table->string('cpf', 11)->unique();
@@ -24,6 +25,9 @@ return new class extends Migration
             $table->string('logradouro', 100)->nullable();
             $table->string('senha');
             $table->timestamps();
+
+
+            $table->foreign('id_perfil')->references('id')->on('perfis')->onDelete('cascade');
         });
     }
 

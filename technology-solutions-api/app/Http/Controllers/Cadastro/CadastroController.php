@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
+
 class CadastroController extends Controller
 {
     public function store(Request $request): JsonResponse
@@ -16,6 +17,7 @@ class CadastroController extends Controller
 
             $rules = [
                 'nome'       => 'required|string|max:100',
+                'id_perfil'  => 'required|integer|exists:perfis,id',
                 'email'      => 'required|string|email|max:50|unique:colaborador',
                 'cpf'        => 'required|string|max:14|unique:colaborador',
                 'celular'    => 'nullable|string|max:11',
@@ -39,6 +41,9 @@ class CadastroController extends Controller
                 'nome.required'     => 'O campo nome é obrigatório',
                 'nome.string'       => 'O campo nome deve ser uma string',
                 'nome.max'          => 'O campo nome deve ter no máximo 100 caracteres',
+                'id_perfil.required' => 'O campo id_perfil é obrigatório',
+                'id_perfil.integer' => 'O campo id_perfil deve ser um inteiro',
+                'id_perfil.exists'  => 'O id_perfil informado não existe',
                 'email.required'    => 'O campo email é obrigatório',
                 'email.string'      => 'O campo email deve ser uma string',
                 'email.email'       => 'O campo email deve ser um email válido',
@@ -82,6 +87,7 @@ class CadastroController extends Controller
             $colaborador = new Colaborador();
 
             $colaborador->nome = $request->nome;
+            $colaborador->id_perfil = $request->id_perfil;
             $colaborador->email = $email;
             $colaborador->cpf = $cpf;
             $colaborador->celular = $celular;
@@ -99,7 +105,7 @@ class CadastroController extends Controller
                     'status'  => 400,
                     'success' => false,
                     'msg'     => 'Erro ao cadastrar colaborador.',
-                    'data'    => now()->format('Y-m-d H:i:s'),
+                    'date'    => now()->format('Y-m-d H:i:s'),
                 ], 500);
             }
 
@@ -107,7 +113,7 @@ class CadastroController extends Controller
                 'status'  => 201,
                 'success' => true,
                 'msg'     => 'Colaborador cadastrado com sucesso.',
-                "data"    => now()->format('Y-m-d H:i:s')
+                "date"    => now()->format('Y-m-d H:i:s')
             ], 201);
 
         } catch (\Exception $e) {
@@ -115,7 +121,7 @@ class CadastroController extends Controller
                 'status'  => 500,
                 'success' => false,
                 'msg'     => 'Erro ao cadastrar usuário: ' . $e->getMessage(),
-                'data'    => now()->format('Y-m-d H:i:s'),
+                'date'    => now()->format('Y-m-d H:i:s'),
             ], 500);
         }
     }

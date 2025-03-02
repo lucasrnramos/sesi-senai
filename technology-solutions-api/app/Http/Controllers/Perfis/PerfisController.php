@@ -21,7 +21,7 @@ class PerfisController extends Controller
                     'status'  => 404,
                     'success' => false,
                     'msg'     => 'Nenhum perfil encontrado',
-                    'data'    => now()->format('Y-m-d H:i:s'),
+                    'date'    => now()->format('Y-m-d H:i:s'),
                 ], 404);
             }
 
@@ -29,7 +29,7 @@ class PerfisController extends Controller
                 'status'  => 200,
                 'success' => true,
                 'msg'     => 'Perfis retornados com sucesso',
-                'data'    => $perfis,
+                'object'  => $perfis,
             ], 200);
 
         } catch (\Exception $e) {
@@ -37,7 +37,7 @@ class PerfisController extends Controller
                 'status'  => 500,
                 'success' => false,
                 'msg'     => 'Erro ao retornar perfis: ' . $e->getMessage(),
-                'data'    => now()->format('Y-m-d H:i:s'),
+                'date'    => now()->format('Y-m-d H:i:s'),
             ], 500);
         }
     }
@@ -67,7 +67,7 @@ class PerfisController extends Controller
                     'status'  => 400,
                     'success' => false,
                     'msg'     => 'Erro de validação.',
-                    'data'    => $validator->errors(),
+                    'object'  => $validator->errors(),
                 ], 400);
             }
 
@@ -85,7 +85,7 @@ class PerfisController extends Controller
                     'status'  => 400,
                     'success' => false,
                     'msg'     => 'Erro ao cadastrar perfil',
-                    'data'    => now()->format('Y-m-d H:i:s'),
+                    'date'    => now()->format('Y-m-d H:i:s'),
                 ], 400);
             }
 
@@ -93,7 +93,7 @@ class PerfisController extends Controller
                 'status'  => 201,
                 'success' => true,
                 'msg'     => 'Perfil cadastrado com sucesso',
-                'data'    => $perfil,
+                'object'  => $perfil,
             ], 201);
 
         } catch (\Exception $e) {
@@ -101,7 +101,7 @@ class PerfisController extends Controller
                 'status'  => 500,
                 'success' => false,
                 'msg'     => 'Erro ao cadastrar perfil: ' . $e->getMessage(),
-                'data'    => now()->format('Y-m-d H:i:s'),
+                'date'    => now()->format('Y-m-d H:i:s'),
             ], 500);
         }
     }
