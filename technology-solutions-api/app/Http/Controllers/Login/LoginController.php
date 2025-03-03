@@ -44,10 +44,10 @@ class LoginController extends Controller
                     'required',
                     'string',
                     'min:8',
-                    'regex:/[a-z]/',      // deve conter pelo menos uma letra minúscula
-                    'regex:/[A-Z]/',      // deve conter pelo menos uma letra maiúscula
-                    'regex:/[0-9]/',      // deve conter pelo menos um número
-                    'regex:/[@$!%*?&]/',  // deve conter pelo menos um caractere especial
+                    'regex:/[a-z]/',      // Deve conter pelo menos uma letra minúscula;
+                    'regex:/[A-Z]/',      // Deve conter pelo menos uma letra maiúscula;
+                    'regex:/[0-9]/',      // Deve conter pelo menos um número;
+                    'regex:/[@$!%*?&]/',  // Deve conter pelo menos um caractere especial;
                 ]
             ];
 
@@ -75,17 +75,18 @@ class LoginController extends Controller
 
             // Trata o CPF removendo caracteres especiais;
             $cpf   = preg_replace('/[^0-9]/', '', $request->cpf);
+
             $senha = $request->post('senha');
 
-            // Encontra o usuário pelo CPF
+            // Encontra o usuário pelo CPF;
             $colaborador = Colaborador::where('cpf', $cpf)->first();
 
-            // Verifica se o usuário foi encontrado
+            // Verifica se o usuário foi encontrado;
             if (!$colaborador || !Hash::check($senha, $colaborador->senha)) {
                 return response()->json([
                     'status'  => 401,
                     'success' => false,
-                    'msg'     => 'CPF ou senha inválidos.',
+                    'msg'     => 'CPF ou senha inválido(s).',
                 ], 401);
             }
 
@@ -93,7 +94,10 @@ class LoginController extends Controller
                 'status'  => 200,
                 'success' => true,
                 'msg'     => 'Login bem-sucedido.',
-                'object'  => true,
+                'object'  => [
+                    'id_perfil' => $colaborador->id_perfil,
+                    'nome'      => $colaborador->nome,
+                ],
             ], 200);
 
         } catch (\Exception $e) {

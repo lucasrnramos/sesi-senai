@@ -32,33 +32,33 @@ class CadastroController extends Controller
                     'required',
                     'string',
                     'min:8',
-                    'regex:/[a-z]/',      // deve conter pelo menos uma letra minúscula
-                    'regex:/[A-Z]/',      // deve conter pelo menos uma letra maiúscula
-                    'regex:/[0-9]/',      // deve conter pelo menos um número
-                    'regex:/[@$!%*?&]/',  // deve conter pelo menos um caractere especial
+                    'regex:/[a-z]/',      // Deve conter pelo menos uma letra minúscula;
+                    'regex:/[A-Z]/',      // Deve conter pelo menos uma letra maiúscula;
+                    'regex:/[0-9]/',      // Deve conter pelo menos um número;
+                    'regex:/[@$!%*?&]/',  // Deve conter pelo menos um caractere especial;
                 ],
             ];
 
             $messages = [
-                'nome.required'     => 'O campo nome é obrigatório',
-                'nome.string'       => 'O campo nome deve ser uma string',
-                'nome.max'          => 'O campo nome deve ter no máximo 100 caracteres',
+                'nome.required'      => 'O campo nome é obrigatório',
+                'nome.string'        => 'O campo nome deve ser uma string',
+                'nome.max'           => 'O campo nome deve ter no máximo 100 caracteres',
                 'id_perfil.required' => 'O campo id_perfil é obrigatório',
-                'id_perfil.integer' => 'O campo id_perfil deve ser um inteiro',
-                'id_perfil.exists'  => 'O id_perfil informado não existe',
-                'email.required'    => 'O campo email é obrigatório',
-                'email.string'      => 'O campo email deve ser uma string',
-                'email.email'       => 'O campo email deve ser um email válido',
-                'email.max'         => 'O campo email deve ter no máximo 50 caracteres',
-                'email.unique'      => 'O email informado já está cadastrado',
-                'cpf.required'      => 'O campo cpf é obrigatório',
-                'cpf.string'        => 'O campo cpf deve ser uma string',
-                'cpf.max'           => 'O campo cpf deve ter 14 caracteres',
-                'cpf.unique'        => 'O cpf informado já está cadastrado',
-                'senha.required'    => 'O campo senha é obrigatório',
-                'senha.string'      => 'O campo senha deve ser uma string',
-                'senha.min'         => 'O campo senha deve ter no mínimo 8 caracteres',
-                'senha.regex'       => 'O campo senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial',
+                'id_perfil.integer'  => 'O campo id_perfil deve ser um inteiro',
+                'id_perfil.exists'   => 'O id_perfil informado não existe',
+                'email.required'     => 'O campo email é obrigatório',
+                'email.string'       => 'O campo email deve ser uma string',
+                'email.email'        => 'O campo email deve ser um email válido',
+                'email.max'          => 'O campo email deve ter no máximo 50 caracteres',
+                'email.unique'       => 'O email informado já está cadastrado',
+                'cpf.required'       => 'O campo cpf é obrigatório',
+                'cpf.string'         => 'O campo cpf deve ser uma string',
+                'cpf.max'            => 'O campo cpf deve ter 14 caracteres',
+                'cpf.unique'         => 'O cpf informado já está cadastrado',
+                'senha.required'     => 'O campo senha é obrigatório',
+                'senha.string'       => 'O campo senha deve ser uma string',
+                'senha.min'          => 'O campo senha deve ter no mínimo 8 caracteres',
+                'senha.regex'        => 'O campo senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial',
             ];
 
             $validator = Validator::make($request->all(), $rules, $messages);
@@ -88,18 +88,20 @@ class CadastroController extends Controller
             // Instancia a model Colaborador e atribui os valores;
             $colaborador = new Colaborador();
 
-            $colaborador->nome = $request->nome;
-            $colaborador->id_perfil = $request->id_perfil;
-            $colaborador->email = $email;
-            $colaborador->cpf = $cpf;
-            $colaborador->celular = $celular;
-            $colaborador->cep = $request->cep;
-            $colaborador->uf = $request->uf;
+            // Vincula os valores aos campos da tabela;
+            $colaborador->nome       = $request->nome;
+            $colaborador->id_perfil  = $request->id_perfil;
+            $colaborador->email      = $email;
+            $colaborador->cpf        = $cpf;
+            $colaborador->celular    = $celular;
+            $colaborador->cep        = $request->cep;
+            $colaborador->uf         = $request->uf;
             $colaborador->localidade = $request->localidade;
-            $colaborador->bairro = $request->bairro;
+            $colaborador->bairro     = $request->bairro;
             $colaborador->logradouro = $request->logradouro;
-            $colaborador->senha = $password;
+            $colaborador->senha      = $password;
 
+            // Salva o registro na tabela;
             $colaborador->save();
 
             if (!$colaborador) {
@@ -152,7 +154,7 @@ class CadastroController extends Controller
                 ], 400);
             }
 
-            // Consulta o convite pelo hash
+            // Consulta o convite pelo hash;
             $convite = DB::table('convites')
                 ->where('hash', $hash)
                 ->first(['email', 'data_e_hora']);
@@ -165,7 +167,7 @@ class CadastroController extends Controller
                 ], 404);
             }
 
-            // Verifica se o convite está dentro das 24 horas
+            // Verifica se o convite está dentro das 24 horas;
             $dataConvite = Carbon::parse($convite->data_e_hora);
             $agora = Carbon::now();
 

@@ -12,8 +12,6 @@ use App\Http\Controllers\Convite\ConviteController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-
-
 */
 
 Route::post('/cadastrar', [CadastroController::class, 'store']);
