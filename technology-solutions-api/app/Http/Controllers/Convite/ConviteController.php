@@ -74,10 +74,10 @@ class ConviteController extends Controller
             // Gera uma string hash aleatória
             $hash = Str::random(32);
 
-            // Envia o e-mail
-            $disparo = Mail::to($request->email)->send(new ConviteMail($request->email, $hash));
+            // Enfileira o envio do e-mail
+            $disparo = Mail::to($request->email)->queue(new ConviteMail($request->email, $hash));
 
-            // Salva os dados na tabela convites (por algum motivo a model não estava sendo localizada)
+            // Salva os dados na tabela convites (por algum motivo a model não estava sendo localizada, então utilizei a classe DB abaixo)
             /*
             $convite = new Convite();
 

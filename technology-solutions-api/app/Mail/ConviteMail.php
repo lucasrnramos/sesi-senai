@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ConviteMail extends Mailable
+class ConviteMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -38,7 +38,6 @@ class ConviteMail extends Mailable
             subject: 'Convite Mail',
         );
     }
-
 
     /**
      * Get the attachments for the message.
