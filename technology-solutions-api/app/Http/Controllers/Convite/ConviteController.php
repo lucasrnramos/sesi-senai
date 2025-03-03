@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Convite;
 
-use App\Models\Convite;
+//use App\Models\Convite;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -10,6 +10,7 @@ use App\Mail\ConviteMail;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Colaborador;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class ConviteController extends Controller
 {
@@ -70,26 +71,37 @@ class ConviteController extends Controller
                 ], 400);
             }
 
-            // Envia o e-mail
-            $disparo = Mail::to($request->email)->send(new ConviteMail($request->email));
-
             // Gera uma string hash aleatória
             $hash = Str::random(32);
 
-            // Salva os dados na tabela convites
+            // Envia o e-mail
+            $disparo = Mail::to($request->email)->send(new ConviteMail($request->email, $hash));
+
+            // Salva os dados na tabela convites (por algum motivo a model não estava sendo localizada)
+            /*
             $convite = new Convite();
 
             $convite->email = $request->email;
             $convite->hash = $hash;
             $convite->data_e_hora = now();
             $convite->save();
+            */
+
+            // Salva os dados na tabela convites
+            $convite = DB::table('convites')->insert([
+                'email'       => $request->email,
+                'hash'        => $hash,
+                'data_e_hora' => now(),
+                'created_at'  => now(),
+                'updated_at'  => now(),
+            ]);
 
             if (!$convite) {
                 return response()->json([
                     'status'  => 500,
                     'success' => false,
                     'msg'     => 'Erro ao criar convite',
-                    'data'    => now()->format('Y-m-d H:i:s'),
+                    'date'    => now()->format('Y-m-d H:i:s'),
                 ], 500);
             }
 
@@ -104,7 +116,7 @@ class ConviteController extends Controller
                 'status'  => 500,
                 'success' => false,
                 'msg'     => 'Erro ao criar convite: ' . $e->getMessage(),
-                'data'    => now()->format('Y-m-d H:i:s'),
+                'date'    => now()->format('Y-m-d H:i:s'),
             ], 500);
         }
     }

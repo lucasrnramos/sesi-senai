@@ -17,6 +17,7 @@ Route::get('/user', function (Request $request) {
 */
 
 Route::post('/cadastrar', [CadastroController::class, 'store']);
+Route::get('/cadastrar/buscar/{hash}', [CadastroController::class, 'show']);
 Route::post('/login', [LoginController::class, 'show']);
 Route::get('/perfis', [PerfisController::class, 'index']);
 Route::post('/perfis/criar', [PerfisController::class, 'store']);

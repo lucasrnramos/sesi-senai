@@ -14,16 +14,19 @@ class ConviteMail extends Mailable
     use Queueable, SerializesModels;
 
     public $email;
+    public $hash;
 
-    public function __construct($email)
+    public function __construct($email, $hash)
     {
         $this->email = $email;
+        $this->hash  = $hash;
     }
 
     public function build()
     {
         return $this->view('emails.convite')
-            ->with(['email' => $this->email]);
+            ->with(['email' => $this->email,
+                     'hash' => $this->hash]);
     }
 
     /**
