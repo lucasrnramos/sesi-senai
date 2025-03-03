@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('email', 50);
             $table->string('hash', 255);
+            $table->integer('tipo_envio');
             $table->dateTime('data_e_hora');
             $table->timestamps();
         });

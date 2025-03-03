@@ -1,7 +1,7 @@
 <html>
     <body>
-        <h1>Temos um Convite para você!</h1>
-        <p>Você foi convidado para participar. Email: {{ $email }}</p>
+        <h1>Aqui você pode redefinir sua senha!</h1>
+        <p>Olá, {{ $email }}</p>
         <a href="http://localhost:4200/{{ $url }}{{ $hash }}">Clique aqui para se cadastrar!</a>
     </body>
 </html>

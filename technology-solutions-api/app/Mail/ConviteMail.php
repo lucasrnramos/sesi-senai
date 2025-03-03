@@ -15,18 +15,30 @@ class ConviteMail extends Mailable implements ShouldQueue
 
     public $email;
     public $hash;
+    public $tipo_envio;
 
-    public function __construct($email, $hash)
+    public function __construct($email, $hash, $tipo_envio)
     {
-        $this->email = $email;
-        $this->hash  = $hash;
+        $this->email      = $email;
+        $this->hash       = $hash;
+        $this->tipo_envio = $tipo_envio;
     }
 
     public function build()
     {
-        return $this->view('emails.convite')
-            ->with(['email' => $this->email,
-                     'hash' => $this->hash]);
+        if ($this->tipo_envio == 1) {
+            return $this->view('emails.convite')
+                ->with(['url'   => 'cadastrar/',
+                        'email' => $this->email,
+                        'hash'  => $this->hash]);
+
+        } else if ($this->tipo_envio == 2) {
+            return $this->view('emails.redefinir-senha')
+                ->with(['url'   => 'recuperar-senha/',
+                        'email' => $this->email,
+                        'hash'  => $this->hash]);
+        }
+
     }
 
     /**

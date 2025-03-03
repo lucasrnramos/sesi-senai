@@ -109,4 +109,71 @@ class LoginController extends Controller
             ], 500);
         }
     }
+
+    public function update(Request $request): JsonResponse
+    {
+        try {
+
+            $rules = [
+                'hash' => 'required|string',
+                'senha'      => [
+                    'required',
+                    'string',
+                    'min:8',
+                    'regex:/[a-z]/',      // Deve conter pelo menos uma letra minúscula;
+                    'regex:/[A-Z]/',      // Deve conter pelo menos uma letra maiúscula;
+                    'regex:/[0-9]/',      // Deve conter pelo menos um número;
+                    'regex:/[@$!%*?&]/',  // Deve conter pelo menos um caractere especial;
+                ]
+            ];
+
+            $messages = [
+                'hash.required'     => 'O campo hash é obrigatório',
+                'hash.string'       => 'O campo hash deve ser uma string',
+                'senha.required'    => 'O campo senha é obrigatório',
+                'senha.string'      => 'O campo senha deve ser uma string',
+                'senha.min'         => 'O campo senha deve ter no mínimo 8 caracteres',
+                'senha.regex'       => 'O campo senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial',
+            ];
+
+            $validator = Validator::make($request->all(), $rules, $messages);
+
+            // Verifica se os campos obrigatórios foram informados;
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'  => 400,
+                    'success' => false,
+                    'msg'     => 'Erro ao validar dados: ' . $validator->errors(),
+                    'date'    => now()->format('Y-m-d H:i:s'),
+                ], 400);
+            }
+
+            // Encontra o convite pelo hash e verifica se a mesma está dentro das 24 horas desde seu envio;
+            $convite = Convite::where('hash', $request->hash)
+                ->where('data_e_hora', '>=', now()->subHours(24))
+                ->first();
+
+            // Verifica se o convite foi encontrado;
+            if (!$convite) {
+                return response()->json([
+                    'status'  => 404,
+                    'success' => false,
+                    'msg'     => 'Convite não encontrado ou expirado.',
+                ], 404);
+            }
+
+            // Faz o update da senha do colaborador na tabela colaboradores;
+            $colaborador = Colaborador::where('email', $convite->email)->first();
+            $colaborador->senha = bcrypt($request->senha);
+            $colaborador->save();
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 500,
+                'success' => false,
+                'msg'     => 'Erro ao retornar dados: ' . $e->getMessage(),
+                'date'    => now()->format('Y-m-d H:i:s'),
+            ], 500);
+        }
+    }
 }

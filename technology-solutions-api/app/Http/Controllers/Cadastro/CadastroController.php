@@ -180,9 +180,9 @@ class CadastroController extends Controller
             }
 
             return response()->json([
-                'status'  => 200,
-                'success' => true,
-                'email'   => $convite->email,
+                'status'      => 200,
+                'success'     => true,
+                'email'       => $convite->email,
                 'data_e_hora' => $convite->data_e_hora,
             ], 200);
 
