@@ -7,7 +7,9 @@ use App\Models\Colaborador;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class CadastroController extends Controller
 {
@@ -121,6 +123,72 @@ class CadastroController extends Controller
                 'status'  => 500,
                 'success' => false,
                 'msg'     => 'Erro ao cadastrar usuário: ' . $e->getMessage(),
+                'date'    => now()->format('Y-m-d H:i:s'),
+            ], 500);
+        }
+    }
+
+    public function show($hash)
+    {
+        try {
+
+            $rules = [
+                'hash' => 'required|string',
+            ];
+
+            $messages = [
+                'hash.required' => 'O campo hash é obrigatório',
+                'hash.string'   => 'O campo hash deve ser uma string',
+            ];
+
+            $validator = Validator::make(['hash' => $hash], $rules, $messages);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'  => 400,
+                    'success' => false,
+                    'msg'     => 'Erro de validação.',
+                    'object'  => $validator->errors(),
+                ], 400);
+            }
+
+            // Consulta o convite pelo hash
+            $convite = DB::table('convites')
+                ->where('hash', $hash)
+                ->first(['email', 'data_e_hora']);
+
+            if (!$convite) {
+                return response()->json([
+                    'status'  => 404,
+                    'success' => false,
+                    'msg'     => 'Convite não encontrado',
+                ], 404);
+            }
+
+            // Verifica se o convite está dentro das 24 horas
+            $dataConvite = Carbon::parse($convite->data_e_hora);
+            $agora = Carbon::now();
+
+            if ($dataConvite->diffInHours($agora) > 24) {
+                return response()->json([
+                    'status'  => 400,
+                    'success' => false,
+                    'msg'     => 'Convite expirado',
+                ], 400);
+            }
+
+            return response()->json([
+                'status'  => 200,
+                'success' => true,
+                'email'   => $convite->email,
+                'data_e_hora' => $convite->data_e_hora,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 500,
+                'success' => false,
+                'msg'     => 'Erro ao retornar dados: ' . $e->getMessage(),
                 'date'    => now()->format('Y-m-d H:i:s'),
             ], 500);
         }
