@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Perfis;
 
 use App\Http\Controllers\Controller;
+use App\Models\Colaborador;
 use App\Models\Perfil;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -101,6 +102,81 @@ class PerfisController extends Controller
                 'status'  => 500,
                 'success' => false,
                 'msg'     => 'Erro ao cadastrar perfil: ' . $e->getMessage(),
+                'date'    => now()->format('Y-m-d H:i:s'),
+            ], 500);
+        }
+    }
+
+    public function update($cpf, $id_perfil)
+    {
+        try {
+
+            $rules = [
+                'cpf'       => 'required|string|max:14',
+                'id_perfil' => 'required|integer',
+            ];
+
+            $messages = [
+                'cpf.required'       => 'O campo cpf é obrigatório',
+                'cpf.string'         => 'O campo cpf deve ser uma string',
+                'cpf.max'            => 'O campo cpf deve ter no máximo 14 caracteres',
+                'id_perfil.required' => 'O campo id_perfil é obrigatório',
+                'id_perfil.integer'  => 'O campo id_perfil deve ser um inteiro',
+            ];
+
+            $validator = Validator::make(['cpf' => $cpf, 'id_perfil' => $id_perfil], $rules, $messages);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'  => 400,
+                    'success' => false,
+                    'msg'     => 'Erro de validação.',
+                    'object'  => $validator->errors(),
+                ], 400);
+            }
+
+            // Tratamento para remover caracteres especiais
+            $cpf = preg_replace('/[^0-9]/', '', $cpf);
+
+            // Instancia a model Colaborador e atualiza os dados
+            $colaborador = Colaborador::where('cpf', $cpf)->first();
+
+            if (!$colaborador) {
+                return response()->json([
+                    'status'  => 404,
+                    'success' => false,
+                    'msg'     => 'Perfil não encontrado',
+                    'date'    => now()->format('Y-m-d H:i:s'),
+                ], 404);
+            }
+
+            // Atribui o no novo id_perfil;
+            $colaborador->id_perfil = $id_perfil;
+
+            $colaborador->save();
+
+            if (!$colaborador) {
+                return response()->json([
+                    'status'  => 400,
+                    'success' => false,
+                    'msg'     => 'Erro ao atualizar perfil',
+                    'date'    => now()->format('Y-m-d H:i:s'),
+                ], 400);
+            }
+
+            return response()->json([
+                'status'  => 200,
+                'success' => true,
+                'msg'     => 'Perfil atualizado com sucesso',
+                'object'  => true,
+                'date'    => now()->format('Y-m-d H:i:s'),
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 500,
+                'success' => false,
+                'msg'     => 'Erro ao atualizar perfil: ' . $e->getMessage(),
                 'date'    => now()->format('Y-m-d H:i:s'),
             ], 500);
         }

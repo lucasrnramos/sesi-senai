@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Controllers\Cadastro\CadastroController;
 use App\Http\Controllers\Perfis\PerfisController;
+use App\Http\Controllers\Convite\ConviteController;
 
 /*
 Route::get('/user', function (Request $request) {
@@ -16,6 +17,10 @@ Route::get('/user', function (Request $request) {
 */
 
 Route::post('/cadastrar', [CadastroController::class, 'store']);
+Route::get('/cadastrar/buscar/{hash}', [CadastroController::class, 'show']);
 Route::post('/login', [LoginController::class, 'show']);
 Route::get('/perfis', [PerfisController::class, 'index']);
 Route::post('/perfis/criar', [PerfisController::class, 'store']);
+Route::patch('/perfis/editar/{cpf}/{id_perfil}', [PerfisController::class, 'update']);
+Route::post('/convite/criar', [ConviteController::class, 'store']);
+Route::get('/convite', [ConviteController::class, 'index']);
