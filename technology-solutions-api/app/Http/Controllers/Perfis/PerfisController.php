@@ -9,8 +9,46 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Schema(
+ *     schema="Perfil",
+ *     type="object",
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="perfil", type="string", example="Admin"),
+ *     @OA\Property(property="status", type="string", example="A"),
+ *     @OA\Property(property="data", type="string", format="date", example="2023-01-01")
+ * )
+ */
+
 class PerfisController extends Controller
 {
+
+    /**
+     * @OA\Get(
+     *     path=":80/api/perfis",
+     *     summary="Get all profiles",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Profiles retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="msg", type="string", example="Perfis retornados com sucesso"),
+     *             @OA\Property(property="object", type="array", @OA\Items(ref="#/components/schemas/Perfil"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No profiles found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=404),
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="msg", type="string", example="Nenhum perfil encontrado")
+     *         )
+     *     )
+     * )
+     */
+
     public function index()
     {
         try {
@@ -42,6 +80,41 @@ class PerfisController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * @OA\Post(
+     *     path=":80/api/perfis/criar",
+     *     summary="Create a new profile",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"perfil", "status"},
+     *             @OA\Property(property="perfil", type="string", example="Admin"),
+     *             @OA\Property(property="status", type="string", example="A")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Profile created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=201),
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="msg", type="string", example="Perfil cadastrado com sucesso"),
+     *             @OA\Property(property="object", ref="#/components/schemas/Perfil")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=400),
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="msg", type="string", example="Erro de validação."),
+     *             @OA\Property(property="object", type="object")
+     *         )
+     *     )
+     * )
+     */
 
     public function store(Request $request)
     {
@@ -106,6 +179,56 @@ class PerfisController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * @OA\Patch(
+     *     path=":80/api/perfis/editar/{cpf}/{id_perfil}",
+     *     summary="Update a profile",
+     *     @OA\Parameter(
+     *         name="cpf",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         description="CPF of the user"
+     *     ),
+     *     @OA\Parameter(
+     *         name="id_perfil",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         description="ID of the profile"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Profile updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="msg", type="string", example="Perfil atualizado com sucesso"),
+     *             @OA\Property(property="object", type="boolean", example=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=400),
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="msg", type="string", example="Erro de validação."),
+     *             @OA\Property(property="object", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Profile not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=404),
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="msg", type="string", example="Perfil não encontrado")
+     *         )
+     *     )
+     * )
+     */
 
     public function update($cpf, $id_perfil)
     {
