@@ -7,32 +7,63 @@ use App\Models\Colaborador;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+//use App\Models\Convite;
+
+/**
+ * @OA\Info(
+ *     title="API Documentation",
+ *     version="1.0.0"
+ * ),
+ * @OA\Schema(
+ *      schema="Login",
+ *      type="object",
+ *      @OA\Property(property="cpf", type="string", example="123.456.789-00"),
+ *      @OA\Property(property="senha", type="string", example="Password123!")
+ *  )
+ */
 
 class LoginController extends Controller
 {
 
-    /*
-    public function login(Request $request): JsonResponse
-    {
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            $user  = Auth::user();
-            $token = $user->createToken('auth_token')->plainTextToken;
-
-            return response()->json([
-                'access_token' => $token,
-                'token_type'   => 'Bearer',
-            ]);
-        }
-
-        return response()->json([
-            'message' => 'Unauthorized'
-        ], 401);
-    }
-    */
+    /**
+     * @OA\Post(
+     *     path=":80/api/login",
+     *     summary="Login user",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"cpf", "senha"},
+     *             @OA\Property(property="cpf", type="string", example="123.456.789-00"),
+     *             @OA\Property(property="senha", type="string", example="Password123!")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="msg", type="string", example="Login bem-sucedido."),
+     *             @OA\Property(property="object", type="object",
+     *                 @OA\Property(property="id_perfil", type="integer", example=1),
+     *                 @OA\Property(property="nome", type="string", example="John Doe")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=401),
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="msg", type="string", example="CPF ou senha inválido(s).")
+     *         )
+     *     )
+     * )
+     */
 
     public function show(Request $request): JsonResponse
     {
@@ -110,6 +141,39 @@ class LoginController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path=":80/api/login/redefinir",
+     *     summary="Redefine user password",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"hash", "senha"},
+     *             @OA\Property(property="hash", type="string", example="randomhashstring"),
+     *             @OA\Property(property="senha", type="string", example="NewPassword123!")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="msg", type="string", example="Senha atualizada com sucesso.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Invitation not found or expired",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=404),
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="msg", type="string", example="Convite não encontrado ou expirado.")
+     *         )
+     *     )
+     * )
+     */
+
     public function update(Request $request): JsonResponse
     {
         try {
@@ -149,7 +213,7 @@ class LoginController extends Controller
             }
 
             // Encontra o convite pelo hash e verifica se a mesma está dentro das 24 horas desde seu envio;
-            $convite = Convite::where('hash', $request->hash)
+            $convite = DB::table('convites')->where('hash', $request->hash)
                 ->where('data_e_hora', '>=', now()->subHours(24))
                 ->first();
 
@@ -166,6 +230,22 @@ class LoginController extends Controller
             $colaborador = Colaborador::where('email', $convite->email)->first();
             $colaborador->senha = bcrypt($request->senha);
             $colaborador->save();
+
+            if (!$colaborador) {
+                return response()->json([
+                    'status'  => 400,
+                    'success' => false,
+                    'msg'     => 'Erro ao atualizar senha.',
+                    'date'    => now()->format('Y-m-d H:i:s'),
+                ], 500);
+            }
+
+            return response()->json([
+                'status'  => 200,
+                'success' => true,
+                'msg'     => 'Senha atualizada com sucesso.',
+                'date'    => now()->format('Y-m-d H:i:s'),
+            ], 200);
 
         } catch (\Exception $e) {
             return response()->json([

@@ -11,8 +11,68 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
+/**
+ * @OA\Schema(
+ *     schema="Cadastro",
+ *     type="object",
+ *     @OA\Property(property="nome", type="string", example="John Doe"),
+ *     @OA\Property(property="id_perfil", type="integer", example=1),
+ *     @OA\Property(property="email", type="string", example="example@example.com"),
+ *     @OA\Property(property="cpf", type="string", example="123.456.789-00"),
+ *     @OA\Property(property="celular", type="string", example="1234567890"),
+ *     @OA\Property(property="cep", type="string", example="12345-678"),
+ *     @OA\Property(property="uf", type="string", example="SP"),
+ *     @OA\Property(property="localidade", type="string", example="São Paulo"),
+ *     @OA\Property(property="bairro", type="string", example="Centro"),
+ *     @OA\Property(property="logradouro", type="string", example="Rua Exemplo"),
+ *     @OA\Property(property="senha", type="string", example="Password123!")
+ * )
+ */
+
 class CadastroController extends Controller
 {
+
+    /**
+     * @OA\Post(
+     *     path=":80/api/cadastrar",
+     *     summary="Create a new user",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Cadastro")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="User created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=201),
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="msg", type="string", example="Colaborador cadastrado com sucesso."),
+     *             @OA\Property(property="date", type="string", example="2023-01-01T00:00:00Z")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=400),
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="msg", type="string", example="Erro de validação."),
+     *             @OA\Property(property="object", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=500),
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="msg", type="string", example="Erro ao cadastrar usuário."),
+     *             @OA\Property(property="date", type="string", example="2023-01-01T00:00:00Z")
+     *         )
+     *     )
+     * )
+     */
+
     public function store(Request $request): JsonResponse
     {
         try {
@@ -129,6 +189,58 @@ class CadastroController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path=":80/api/cadastrar/buscar/{hash}",
+     *     summary="Get invite details by hash",
+     *     @OA\Parameter(
+     *         name="hash",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Invite details retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=200),
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="email", type="string", example="example@example.com"),
+     *             @OA\Property(property="data_e_hora", type="string", example="2023-01-01T00:00:00Z")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=400),
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="msg", type="string", example="Erro de validação."),
+     *             @OA\Property(property="object", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Invite not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=404),
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="msg", type="string", example="Convite não encontrado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="integer", example=500),
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="msg", type="string", example="Erro ao retornar dados."),
+     *             @OA\Property(property="date", type="string", example="2023-01-01T00:00:00Z")
+     *         )
+     *     )
+     * )
+     */
 
     public function show($hash)
     {
