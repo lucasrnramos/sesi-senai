@@ -12,7 +12,7 @@
 - Executar as migrations: "sail artisan migrate";
 - Iniciar o worker das filas de email: "sail artisan queue:work";
 
-## Estou utilizando o MailTrip, um serve fake de emails para desenvolvimento, siga os passos a seguir:
+## Estou utilizando o MailTrip, um server fake de emails para desenvolvimento, siga os passos a seguir:
 - acesse: https://mailtrap.io/
 - Crie uma conta;
 - Selecione o plano gratuito: "Email testing";
